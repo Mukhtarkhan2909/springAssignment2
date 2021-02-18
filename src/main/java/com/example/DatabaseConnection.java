@@ -3,26 +3,28 @@ package com.example;
 import java.sql.*;
 
 public class DatabaseConnection {
-    public DatabaseConnection() throws SQLException {}
-
-    String URL = "jdbc:postgresql://localhost:5432/Customer";
-    String USERNAME = "postgres";
-    String PASSWORD = "qweasz11";
+    private static final String URL = "jdbc:postgresql://localhost:5432/Customer";
+    private static final String USERNAME = "postgres";
+    private static final String PASSWORD = "qweasz11";
     Connection connection;
     Statement statement;
     ResultSet resultSet;
+    String sql = "SELECT * FROM \"Users\"";
 
     public void myInit() throws SQLException {
         System.out.println("Doing my initialization");
-        System.out.println("Connecting to the database");
+        System.out.println("Connecting to database");
+        System.out.println("Creating statement");
         connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        String sql = "SELECT * FROM \"Users\"";
-        statement = connection.createStatement();
+        statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         resultSet = statement.executeQuery(sql);
     }
     public void myDestroy() throws SQLException {
         System.out.println("Doing my destruction");
-        System.out.println("Closing the database");
+        System.out.println("Closing statement");
+        System.out.println("Closing database");
+        resultSet.close();
+        statement.close();
         connection.close();
     }
     public void updateBalance(int balance, String name) throws SQLException {
@@ -36,11 +38,10 @@ public class DatabaseConnection {
             System.out.println("Balance is not updated");
         }
     }
+    public void beforeFirst() throws SQLException {
+        resultSet.beforeFirst();
+    }
     public ResultSet getResultSet() {
         return resultSet;
-    }
-
-    public static DatabaseConnection getDatabaseConnection() throws SQLException {
-        return new DatabaseConnection();
     }
 }

@@ -11,15 +11,15 @@ public class AtmSystemTest {
                 "bean.xml");
         DatabaseConnection connection = context.getBean("databaseConnection", DatabaseConnection.class);
         Scanner s = new Scanner(System.in);
-        String userName = null;
-        int userCardNumber = 0;
-        int userPinCode = 0;
-        int userBalance = 0;
-        loop:
-        while (true) {
-            ResultSet resultSet = connection.getResultSet();
+
+        loop: while (true) {
             System.out.println("Enter your username");
             String name = s.next();
+            ResultSet resultSet = connection.getResultSet();
+            String userName = null;
+            int userCardNumber = 0;
+            int userPinCode = 0;
+            int userBalance = 0;
             while (resultSet.next()) {
                 if (resultSet.getString("user_name").equalsIgnoreCase(name)) {
                     userName = resultSet.getString("user_name");
@@ -70,6 +70,7 @@ public class AtmSystemTest {
             } else {
                 System.out.println("Account not found");
             }
+            connection.beforeFirst();
         }
         context.close();
     }
